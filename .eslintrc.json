@@ -3,8 +3,12 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
+
   "rules": {
-    "@typescript-eslint/strict-boolean-expressions": "off",
-    "@typescript-eslint/ident": 1
+    "indent": "off",
+    "@typescript-eslint/ident": "off",
+    "no-use-before-define": ["error", { "variables": false }],
+    "@typescript-eslint/strict-boolean-expressions": "off"
+    
   }
 }
