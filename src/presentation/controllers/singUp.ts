@@ -1,5 +1,6 @@
+import { HttpRequest, HttpResponse } from '../protocols/http'
 export class SingupController {
-  handle (httpRequest: any): any {
+  handle (httpRequest: HttpRequest): HttpResponse {
     if (!httpRequest.body.name || !httpRequest.body.email) {
       return {
         statusCode: 400,
