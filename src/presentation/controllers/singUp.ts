@@ -1,7 +1,9 @@
 import { MissingParamError, Unauthorized } from '../errors/missing-param-error'
 import { HttpRequest, HttpResponse } from '../protocols/http'
 import { badRequest, unauthorized } from '../helpers/http-helper'
-export class SingupController {
+import { Controller } from '../protocols/controller'
+
+export class SingupController implements Controller {
   handle (httpRequest: HttpRequest): HttpResponse {
     const requiredFields = ['name', 'email']
     for (const field of requiredFields) {
