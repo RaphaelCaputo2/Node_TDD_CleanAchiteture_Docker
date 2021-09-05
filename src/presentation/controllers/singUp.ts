@@ -2,9 +2,10 @@ import { MissingParamError } from '../errors/missing-param-error'
 import { InvalidParamError } from '../errors/invalidParamError'
 import { Unauthorized } from '../errors/unauthorized'
 import { HttpRequest, HttpResponse } from '../protocols/http'
-import { badRequest, unauthorized } from '../helpers/http-helper'
+import { badRequest, serverError, unauthorized } from '../helpers/http-helper'
 import { Controller } from '../protocols/controller'
 import { EmailValidator } from '../protocols/email-validator'
+import { ServerError } from '../errors/serverError'
 
 export class SingupController implements Controller {
   private readonly emailValidator: EmailValidator
@@ -13,18 +14,22 @@ export class SingupController implements Controller {
   }
 
   handle (httpRequest: HttpRequest): HttpResponse {
-    const requiredFields = ['name', 'email']
-    for (const field of requiredFields) {
-      if (!httpRequest.body[field]) {
-        return badRequest(new MissingParamError('Email or Name'))
+    try {
+      const requiredFields = ['name', 'email']
+      for (const field of requiredFields) {
+        if (!httpRequest.body[field]) {
+          return badRequest(new MissingParamError('Email or Name'))
+        }
       }
-    }
-    if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {
-      return unauthorized(new Unauthorized('password'))
-    }
-    const isValid = this.emailValidator.isValid(httpRequest.body.email)
-    if (!isValid) {
-      return badRequest(new InvalidParamError('email'))
+      if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {
+        return unauthorized(new Unauthorized('password'))
+      }
+      const isValid = this.emailValidator.isValid(httpRequest.body.email)
+      if (!isValid) {
+        return badRequest(new InvalidParamError('email'))
+      }
+    } catch (error) {
+      return serverError(new ServerError())
     }
   }
 }
