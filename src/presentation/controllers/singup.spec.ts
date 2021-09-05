@@ -5,7 +5,6 @@ describe('SingUp Controller', () => {
     const sut = new SingupController()
     const httpRequest = {
       body: {
-        // name: 'any_name',
         email: 'any_email@mail.com',
         password: 'any_password',
         passwordConfirmation: 'any_password'
@@ -13,23 +12,22 @@ describe('SingUp Controller', () => {
     }
     const httpResponse = sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new MissingParamError('Email or name'))
+    expect(httpResponse.body).toEqual(new MissingParamError('Email or Name'))
   })
   test('Should return 400 if no email is provided', () => {
     const sut = new SingupController()
     const httpRequest = {
       body: {
         name: 'any_name',
-        // email: 'any_email@mail.com',
         password: 'any_password',
         passwordConfirmation: 'any_password'
       }
     }
     const httpResponse = sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(400)
-    expect(httpResponse.body).toEqual(new MissingParamError('Email or name'))
+    expect(httpResponse.body).toEqual(new MissingParamError('Email or Name'))
   })
-  test('Should return 400 if no password is equal', () => {
+  test('Should return 404 if password is not equal', () => {
     const sut = new SingupController()
     const httpRequest = {
       body: {

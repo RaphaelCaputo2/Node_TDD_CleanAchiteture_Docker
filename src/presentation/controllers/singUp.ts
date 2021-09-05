@@ -3,8 +3,11 @@ import { HttpRequest, HttpResponse } from '../protocols/http'
 import { badRequest, unauthorized } from '../helpers/http-helper'
 export class SingupController {
   handle (httpRequest: HttpRequest): HttpResponse {
-    if (!httpRequest.body.name || !httpRequest.body.email) {
-      return badRequest(new MissingParamError('Email or name'))
+    const requiredFields = ['name', 'email']
+    for (const field of requiredFields) {
+      if (!httpRequest.body[field]) {
+        return badRequest(new MissingParamError('Email or Name'))
+      }
     }
     if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {
       return unauthorized(new MissingParamError('password'))
