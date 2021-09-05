@@ -7,3 +7,7 @@ export const unauthorized = (error: Error): HttpResponse => ({
   statusCode: 404,
   body: error
 })
+export const serverError = (error: Error): HttpResponse => ({
+  statusCode: 500,
+  body: error
+})
