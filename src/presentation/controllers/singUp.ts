@@ -4,8 +4,14 @@ import { Unauthorized } from '../errors/unauthorized'
 import { HttpRequest, HttpResponse } from '../protocols/http'
 import { badRequest, unauthorized } from '../helpers/http-helper'
 import { Controller } from '../protocols/controller'
+import { EmailValidator } from '../protocols/email-validator'
 
 export class SingupController implements Controller {
+  private readonly emailValidator: EmailValidator
+  constructor (emailValidator: EmailValidator) {
+    this.emailValidator = emailValidator
+  }
+
   handle (httpRequest: HttpRequest): HttpResponse {
     const requiredFields = ['name', 'email']
     for (const field of requiredFields) {
@@ -16,7 +22,8 @@ export class SingupController implements Controller {
     if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {
       return unauthorized(new Unauthorized('password'))
     }
-    if (httpRequest.body.email.startsWith('invalid')) {
+    const isValid = this.emailValidator.isValid(httpRequest.body.email)
+    if (!isValid) {
       return badRequest(new InvalidParamError('email'))
     }
   }
