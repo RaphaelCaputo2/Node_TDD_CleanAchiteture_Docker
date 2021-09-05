@@ -1,8 +1,13 @@
-import { MissingParamError, Unauthorized } from '../errors/missing-param-error'
+import { MissingParamError } from '../errors/missing-param-error'
+import { Unauthorized } from '../errors/unauthorized'
+import { InvalidParamError } from '../errors/invalidParamError'
 import { SingupController } from './singUp'
+const makeSut = (): SingupController => {
+  return new SingupController()
+}
 describe('SingUp Controller', () => {
   test('Should return 400 if no name is provided', () => {
-    const sut = new SingupController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         email: 'any_email@mail.com',
@@ -15,7 +20,7 @@ describe('SingUp Controller', () => {
     expect(httpResponse.body).toEqual(new MissingParamError('Email or Name'))
   })
   test('Should return 400 if no email is provided', () => {
-    const sut = new SingupController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -28,7 +33,7 @@ describe('SingUp Controller', () => {
     expect(httpResponse.body).toEqual(new MissingParamError('Email or Name'))
   })
   test('Should return 404 if password is not equal', () => {
-    const sut = new SingupController()
+    const sut = makeSut()
     const httpRequest = {
       body: {
         name: 'any_name',
@@ -40,5 +45,19 @@ describe('SingUp Controller', () => {
     const httpResponse = sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(404)
     expect(httpResponse.body).toEqual(new Unauthorized('password'))
+  })
+  test('Should return 400 if an invalid email is provided', () => {
+    const sut = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'invalid_email@mail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(400)
+    expect(httpResponse.body).toEqual(new InvalidParamError('email'))
   })
 })

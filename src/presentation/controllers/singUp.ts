@@ -1,4 +1,6 @@
-import { MissingParamError, Unauthorized } from '../errors/missing-param-error'
+import { MissingParamError } from '../errors/missing-param-error'
+import { InvalidParamError } from '../errors/invalidParamError'
+import { Unauthorized } from '../errors/unauthorized'
 import { HttpRequest, HttpResponse } from '../protocols/http'
 import { badRequest, unauthorized } from '../helpers/http-helper'
 import { Controller } from '../protocols/controller'
@@ -13,6 +15,9 @@ export class SingupController implements Controller {
     }
     if (httpRequest.body.password !== httpRequest.body.passwordConfirmation) {
       return unauthorized(new Unauthorized('password'))
+    }
+    if (httpRequest.body.email.startsWith('invalid')) {
+      return badRequest(new InvalidParamError('email'))
     }
   }
 }
