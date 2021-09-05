@@ -1,4 +1,4 @@
-import { MissingParamError } from '../errors/missing-param-error'
+import { MissingParamError, Unauthorized } from '../errors/missing-param-error'
 import { SingupController } from './singUp'
 describe('SingUp Controller', () => {
   test('Should return 400 if no name is provided', () => {
@@ -39,6 +39,6 @@ describe('SingUp Controller', () => {
     }
     const httpResponse = sut.handle(httpRequest)
     expect(httpResponse.statusCode).toBe(404)
-    expect(httpResponse.body).toEqual(new MissingParamError('password'))
+    expect(httpResponse.body).toEqual(new Unauthorized('password'))
   })
 })
