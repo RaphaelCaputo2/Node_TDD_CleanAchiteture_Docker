@@ -23,7 +23,7 @@ const makeSut = (): SutTypes => {
     emailValidatorStub
   }
 }
-describe('SingUp Controller', () => {
+describe('Data Controller', () => {
   test('Should return 400 if no name is provided', () => {
     const { sut } = makeSut()
     const httpRequest = {
@@ -50,20 +50,7 @@ describe('SingUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new MissingParamError('Email or Name'))
   })
-  test('Should return 404 if password is not equal', () => {
-    const { sut } = makeSut()
-    const httpRequest = {
-      body: {
-        name: 'any_name',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-        passwordConfirmation: 'anypassword'
-      }
-    }
-    const httpResponse = sut.handle(httpRequest)
-    expect(httpResponse.statusCode).toBe(404)
-    expect(httpResponse.body).toEqual(new Unauthorized('password'))
-  })
+
   test('Should return 400 if an invalid email is provided', () => {
     const { sut, emailValidatorStub } = makeSut()
     jest.spyOn(emailValidatorStub, 'isValid').mockReturnValueOnce(false)
@@ -94,14 +81,29 @@ describe('SingUp Controller', () => {
 
     expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com')
   })
-  test('Should return 500 if EmailValidator throws', () => {
-    class EmailValidatorStub implements EmailValidator {
-      isValid (email: string): boolean {
-        throw new Error()
+})
+describe('Password Controller', () => {
+  test('Should return 404 if password is not equal', () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        passwordConfirmation: 'anypassword'
       }
     }
-    const emailValidatorStub = new EmailValidatorStub()
-    const sut = new SingupController(emailValidatorStub)
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(404)
+    expect(httpResponse.body).toEqual(new Unauthorized('password'))
+  })
+})
+describe('Server Controller', () => {
+  test('Should return 500 if Server throws new Error', () => {
+    const { sut, emailValidatorStub } = makeSut()
+    jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => {
+      throw new Error()
+    })
     const httpRequest = {
       body: {
         name: 'any_name',
