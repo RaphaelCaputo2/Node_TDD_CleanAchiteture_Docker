@@ -1,21 +1,23 @@
-import { MissingParamError } from '../errors/missing-param-error'
-import { InvalidParamError } from '../errors/invalidParamError'
-import { Unauthorized } from '../errors/unauthorized'
-import { HttpRequest, HttpResponse } from '../protocols/http'
+// erro
+import { MissingParamError, InvalidParamError, Unauthorized, ServerError } from '../errors/'
+
+// protocols
+import { HttpRequest, HttpResponse, Controller, EmailValidator } from '../protocols/'
 import { badRequest, serverError, unauthorized } from '../helpers/http-helper'
-import { Controller } from '../protocols/controller'
-import { EmailValidator } from '../protocols/email-validator'
-import { ServerError } from '../errors/serverError'
+import { AddAccount } from '../../domain/useCases/add-account'
 
 export class SingupController implements Controller {
   private readonly emailValidator: EmailValidator
-  constructor (emailValidator: EmailValidator) {
+  private readonly addAccount: AddAccount
+
+  constructor (emailValidator: EmailValidator, addAccount: AddAccount) {
     this.emailValidator = emailValidator
+    this.addAccount = addAccount
   }
 
   handle (httpRequest: HttpRequest): HttpResponse {
     try {
-      const { email, password, passwordConfirmation } = httpRequest.body
+      const { name, email, password, passwordConfirmation } = httpRequest.body
       const requiredFields = ['name', 'email']
       for (const field of requiredFields) {
         if (!httpRequest.body[field]) {
@@ -29,6 +31,11 @@ export class SingupController implements Controller {
       if (!isValid) {
         return badRequest(new InvalidParamError('email'))
       }
+      this.addAccount.add({
+        name,
+        email,
+        password
+      })
     } catch (error) {
       return serverError(new ServerError())
     }
