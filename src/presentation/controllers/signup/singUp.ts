@@ -1,10 +1,9 @@
 // erro
-import { MissingParamError, InvalidParamError, Unauthorized, ServerError } from '../errors/'
+import { MissingParamError, InvalidParamError, Unauthorized, ServerError } from '../../errors'
 
 // protocols
-import { HttpRequest, HttpResponse, Controller, EmailValidator } from '../protocols/'
-import { badRequest, serverError, unauthorized } from '../helpers/http-helper'
-import { AddAccount } from '../../domain/useCases/add-account'
+import { HttpRequest, HttpResponse, Controller, EmailValidator, AddAccount } from './signupProtocols'
+import { badRequest, serverError, unauthorized, ok } from '../../helpers/http-helper'
 
 export class SingupController implements Controller {
   private readonly emailValidator: EmailValidator
@@ -15,7 +14,7 @@ export class SingupController implements Controller {
     this.addAccount = addAccount
   }
 
-  handle (httpRequest: HttpRequest): HttpResponse {
+  async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const { name, email, password, passwordConfirmation } = httpRequest.body
       const requiredFields = ['name', 'email']
@@ -31,11 +30,12 @@ export class SingupController implements Controller {
       if (!isValid) {
         return badRequest(new InvalidParamError('email'))
       }
-      this.addAccount.add({
+      const account = await this.addAccount.add({
         name,
         email,
         password
       })
+      return ok(account)
     } catch (error) {
       return serverError(new ServerError())
     }
