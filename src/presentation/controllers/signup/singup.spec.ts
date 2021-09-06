@@ -117,10 +117,27 @@ describe('Password Controller', () => {
     expect(httpResponse.body).toEqual(new Unauthorized('password'))
   })
 })
-describe('Server Controller', () => {
-  test('Should return 500 if Server throws new Error', () => {
+describe('Server Controller return exceptions', () => {
+  test('Should return 500 if EmailValidator throws new Error', () => {
     const { sut, emailValidatorStub } = makeSut()
     jest.spyOn(emailValidatorStub, 'isValid').mockImplementationOnce(() => {
+      throw new Error()
+    })
+    const httpRequest = {
+      body: {
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+        passwordConfirmation: 'any_password'
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(500)
+    expect(httpResponse.body).toEqual(new ServerError())
+  })
+  test('Should return 500 if AddAccount throws an error', () => {
+    const { sut, addAccountStub } = makeSut()
+    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(() => {
       throw new Error()
     })
     const httpRequest = {
