@@ -136,8 +136,10 @@ describe('Server Controller return exceptions', () => {
   })
   test('Should return 500 if AddAccount throws an error', async () => {
     const { sut, addAccountStub } = makeSut()
-    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(() => {
-      throw new Error()
+    jest.spyOn(addAccountStub, 'add').mockImplementationOnce(async () => {
+      return await new Promise((resolve, reject) => {
+        reject(new Error())
+      })
     })
     const httpRequest = {
       body: {
