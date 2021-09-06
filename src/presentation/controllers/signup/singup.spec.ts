@@ -1,6 +1,5 @@
 // erros
 import { MissingParamError, Unauthorized, InvalidParamError, ServerError } from '../../errors'
-
 import { SingupController } from './singUp'
 import { EmailValidator, AccountModel, AddAccount, AddAccountModel } from './signupProtocols'
 
@@ -171,6 +170,27 @@ describe('Add User/Account Controller', () => {
       name: 'any_name',
       email: 'any_email@mail.com',
       password: 'any_password'
+    })
+  })
+})
+describe('Return 200 in case of success addAccount', () => {
+  test('Should return 200 if valid data is provided', () => {
+    const { sut } = makeSut()
+    const httpRequest = {
+      body: {
+        name: 'valid_name',
+        email: 'valid_email@mail.com',
+        password: 'valid_password',
+        passwordConfirmation: 'valid_password'
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body).toEqual({
+      id: 'valid_id',
+      name: 'valid_name',
+      email: 'valid_email@email.com',
+      password: 'valid_password'
     })
   })
 })
