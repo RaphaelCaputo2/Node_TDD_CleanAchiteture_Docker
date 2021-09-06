@@ -3,7 +3,7 @@ import { MissingParamError, InvalidParamError, Unauthorized, ServerError } from 
 
 // protocols
 import { HttpRequest, HttpResponse, Controller, EmailValidator, AddAccount } from './signupProtocols'
-import { badRequest, serverError, unauthorized } from '../../helpers/http-helper'
+import { badRequest, serverError, unauthorized, ok } from '../../helpers/http-helper'
 
 export class SingupController implements Controller {
   private readonly emailValidator: EmailValidator
@@ -35,10 +35,7 @@ export class SingupController implements Controller {
         email,
         password
       })
-      return {
-        statusCode: 200,
-        body: account
-      }
+      return ok(account)
     } catch (error) {
       return serverError(new ServerError())
     }
