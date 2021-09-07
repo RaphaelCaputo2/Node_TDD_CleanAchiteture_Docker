@@ -7,6 +7,7 @@
     "test": "jest --passWithNoTests --silent --noStackTrace",
     "test:verbose": "jest --passWithNoTests",
     "test:unit": "npm test -- --watch",
+    "test:integration": "npm test -- --watch -c jest-unit.config.js",
     "test:staged": "jest --passWithNoTests --watch"
   },
   "keywords": [],
